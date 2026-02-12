@@ -1,11 +1,10 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"reflect"
 	"strings"
 
-	"github.com/go-viper/mapstructure/v2"
 	"github.com/spf13/viper"
 )
 
@@ -44,60 +43,22 @@ type System struct {
 }
 
 func New() (*Config, error) {
-	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v := viper.New()
 
-	bindEnvs(Config{})
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Println("Config file not found, using environment variables.")
-		} else {
-			log.Printf("Error reading config file: %v. Error type: %T\n", err, err)
-			return nil, err
-		}
+	bindEnvs(v, Config{})
+
+	var cfg Config
+	if err := v.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("unable to decode into struct: %w", err)
 	}
 
-	var config Config
-	err := viper.Unmarshal(&config, viper.DecodeHook(
-		mapstructure.ComposeDecodeHookFunc(
-			mapstructure.StringToTimeDurationHookFunc(),
-			StringToSliceHookFunc(),
-		),
-	))
-	if err != nil {
-		log.Fatalf("Unable to decode config: %v", err)
-		return nil, err
-	}
-
-	return &config, nil
+	return &cfg, nil
 }
 
-func StringToSliceHookFunc() mapstructure.DecodeHookFunc {
-	return func(f reflect.Type, t reflect.Type, data any) (any, error) {
-		if f.Kind() != reflect.String || t.Kind() != reflect.Slice {
-			return data, nil
-		}
-
-		raw := data.(string)
-		if raw == "" {
-			return []string{}, nil
-		}
-
-		parts := strings.Split(raw, ",")
-		result := make([]string, 0, len(parts))
-
-		for _, p := range parts {
-			if trimmed := strings.TrimSpace(p); trimmed != "" {
-				result = append(result, trimmed)
-			}
-		}
-
-		return result, nil
-	}
-}
-
-func bindEnvs(iface any, parts ...string) {
+func bindEnvs(v *viper.Viper, iface any, parts ...string) {
 	ifv := reflect.ValueOf(iface)
 	ift := reflect.TypeOf(iface)
 
@@ -107,19 +68,19 @@ func bindEnvs(iface any, parts ...string) {
 	}
 
 	for i := 0; i < ift.NumField(); i++ {
-		v := ifv.Field(i)
-		t := ift.Field(i)
-		tv, ok := t.Tag.Lookup("mapstructure")
+		fieldV := ifv.Field(i)
+		fieldT := ift.Field(i)
+		tv, ok := fieldT.Tag.Lookup("mapstructure")
 		if !ok {
 			continue
 		}
 
 		keyPath := strings.Join(append(parts, tv), ".")
 
-		if v.Kind() == reflect.Struct {
-			bindEnvs(v.Interface(), append(parts, tv)...)
+		if fieldV.Kind() == reflect.Struct {
+			bindEnvs(v, fieldV.Interface(), append(parts, tv)...)
 		} else {
-			viper.BindEnv(keyPath)
+			v.BindEnv(keyPath)
 		}
 	}
 }
