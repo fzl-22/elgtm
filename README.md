@@ -21,9 +21,11 @@ elgtm/
 │   └── reviewer/           # Package: reviewer (Core Logic)
 │       └── engine.go       # Orchestrator: Reads .reviewer/ -> Fetches SCM -> Asks LLM
 ├── .reviewer/              # User Config: Custom Prompts
-│   ├── security.md
-│   └── style.md
-├── Dockerfile              # Multi-stage build (Distroless)
-├── Jenkinsfile.example     # How to run it in Jenkins
-└── Jenkinsfile             # Pipeline definition
+│   ├── general.md
+│   └── security.md
+├── .github/
+│   └── workflows/
+│       └── publish.yml     # Automated Docker Hub publishing
+├── Dockerfile              # Multi-stage build (Scratch)
+└── Jenkinsfile             # Pipeline definition (Alternative CI)
 ```
