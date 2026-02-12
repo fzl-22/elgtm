@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/fzl-22/codereviewr/internal/config"
+	"github.com/fzl-22/elgtm/internal/config"
 )
 
 func main() {

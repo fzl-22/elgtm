@@ -1,4 +1,4 @@
-module github.com/fzl-22/codereviewr
+module github.com/fzl-22/elgtm
 
 go 1.25.3
 

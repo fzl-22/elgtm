@@ -1,11 +1,11 @@
-# CodeReviewr
+# ELGTM - Enhanced LGTM
 
 ## Expected Code Structure
 
 ```plaintext
-codereviewr/
+elgtm/
 ├── cmd/
-│   └── codereviewr/        # Main entry point
+│   └── elgtm/        # Main entry point
 │       └── main.go
 ├── internal/
 │   ├── platform/           # Git Provider Facade (GitHub, for now)
