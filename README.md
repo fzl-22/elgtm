@@ -20,7 +20,7 @@ elgtm/
 │   └── reviewer/           # Core logic (orchestrator)
 │       └── engine.go
 ├── pkg/                    # Publicly shareable code (optional)
-├── .reviewr/               # Default user prompts
+├── .reviewer/               # Default user prompts
 │   ├── security.md
 │   └── style.md
 ├── Dockerfile

@@ -30,5 +30,5 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
 	slog.SetDefault(logger)
 
-	slog.Info("Configuration loaded successfully", "platform", cfg.Git.Platform, "ai", cfg.AI.Provider)
+	slog.Info("Configuration loaded successfully", "scm platform", cfg.SCM.Platform, "llm provider", cfg.LLM.Provider)
 }

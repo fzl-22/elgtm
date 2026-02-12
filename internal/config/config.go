@@ -9,13 +9,13 @@ import (
 )
 
 type Config struct {
-	AI     AI     `mapstructure:"ai"`
-	Git    Git    `mapstructure:"git"`
+	LLM    LLM    `mapstructure:"llm"`
+	SCM    SCM    `mapstructure:"scm"`
 	Review Review `mapstructure:"review"`
 	System System `mapstructure:"system"`
 }
 
-type AI struct {
+type LLM struct {
 	Provider    string  `mapstructure:"provider"`
 	Model       string  `mapstructure:"model"`
 	APIKey      string  `mapstructure:"api_key"`
@@ -23,7 +23,7 @@ type AI struct {
 	MaxTokens   int     `mapstructure:"max_tokens"`
 }
 
-type Git struct {
+type SCM struct {
 	Platform      string `mapstructure:"platform"`
 	Token         string `mapstructure:"token"`
 	RepoOwner     string `mapstructure:"repo_owner"`
