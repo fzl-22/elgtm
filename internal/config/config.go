@@ -24,11 +24,12 @@ type LLM struct {
 }
 
 type SCM struct {
-	Platform string `mapstructure:"platform"`
-	Token    string `mapstructure:"token"`
-	Owner    string `mapstructure:"owner"`
-	Repo     string `mapstructure:"repo"`
-	PRNumber int    `mapstructure:"pr_number"`
+	Platform    string `mapstructure:"platform"`
+	Token       string `mapstructure:"token"`
+	Owner       string `mapstructure:"owner"`
+	Repo        string `mapstructure:"repo"`
+	PRNumber    int    `mapstructure:"pr_number"`
+	MaxDiffSize int64  `mapstructure:"max_diff_size"`
 }
 
 type Review struct {
@@ -48,14 +49,17 @@ func New() (*Config, error) {
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	v.SetDefault("review.prompt_dir", ".reviewer")
-	v.SetDefault("review.prompt_type", "general")
-	v.SetDefault("review.language", "en")
-	v.SetDefault("system.log_level", "info")
-	v.SetDefault("system.timeout", 300)
+	v.SetDefault("scm.max_diff_size", 2097152)
 
 	v.SetDefault("llm.temperature", 0.2)
 	v.SetDefault("llm.max_tokens", 4096)
+
+	v.SetDefault("review.prompt_dir", ".reviewer")
+	v.SetDefault("review.prompt_type", "general")
+	v.SetDefault("review.language", "en")
+
+	v.SetDefault("system.log_level", "info")
+	v.SetDefault("system.timeout", 300)
 
 	bindEnvs(v, Config{})
 

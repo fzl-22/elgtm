@@ -6,61 +6,62 @@ import (
 	"io"
 	"net/http"
 
-	scm "github.com/fzl-22/elgtm/internal/scm/types"
+	"github.com/fzl-22/elgtm/internal/config"
 	"github.com/google/go-github/v82/github"
 )
 
 type GitHubClient struct {
 	client     *github.Client
 	httpClient *http.Client
-	token      string
+	cfg        config.SCM
 }
 
-func NewGitHubClient(httpClient *http.Client, token string) *GitHubClient {
+func NewGitHubClient(httpClient *http.Client, cfg config.SCM) *GitHubClient {
 	return &GitHubClient{
-		client:     github.NewClient(httpClient).WithAuthToken(token),
+		client:     github.NewClient(httpClient).WithAuthToken(cfg.Token),
 		httpClient: httpClient,
-		token:      token,
+		cfg:        cfg,
 	}
 }
 
-func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, number int) (*scm.PullRequest, error) {
+func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, number int) (*PullRequest, error) {
 	pr, _, err := c.client.PullRequests.Get(ctx, owner, repo, number)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pull request #%d: %w", number, err)
 	}
 
-	request, err := http.NewRequestWithContext(ctx, "GET", *pr.DiffURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", *pr.DiffURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	request.Header.Set("Authorization", fmt.Sprintf("token %s", c.token))
+	req.Header.Set("Authorization", fmt.Sprintf("token %s", c.cfg.Token))
 
-	response, err := c.httpClient.Do(request)
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get diff: %w", err)
 	}
-	defer response.Body.Close()
+	defer res.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get diff with status: %d", response.StatusCode)
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get diff with status: %d", res.StatusCode)
 	}
 
-	diffBytes, err := io.ReadAll(response.Body)
+	limitedReader := io.LimitReader(res.Body, c.cfg.MaxDiffSize)
+
+	diffBytes, err := io.ReadAll(limitedReader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read diff: %w", err)
 	}
-	rawDiff := string(diffBytes)
 
-	return &scm.PullRequest{
+	return &PullRequest{
 		ID:        *pr.ID,
 		Number:    *pr.Number,
 		Title:     *pr.Title,
 		Body:      *pr.Body,
 		URL:       *pr.URL,
 		DiffURL:   *pr.DiffURL,
-		RawDiff:   rawDiff,
+		RawDiff:   string(diffBytes),
 		CreatedAt: pr.CreatedAt.Time,
 		UpdatedAt: pr.UpdatedAt.Time,
 	}, nil

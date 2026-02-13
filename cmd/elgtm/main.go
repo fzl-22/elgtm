@@ -42,7 +42,7 @@ func main() {
 
 	var scmClient scm.SCM
 	if cfg.SCM.Platform == "github" {
-		scmClient = scm.NewGitHubClient(&httpClient, cfg.SCM.Token)
+		scmClient = scm.NewGitHubClient(&httpClient, cfg.SCM)
 	} else {
 		slog.Error("Unsupported SCM platform", "error", err)
 	}
