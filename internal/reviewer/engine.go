@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/fzl-22/elgtm/internal/config"
+	"github.com/fzl-22/elgtm/internal/scm"
 )
 
 type Engine struct{}
@@ -15,7 +16,7 @@ func NewEngine() *Engine {
 	return &Engine{}
 }
 
-func (e *Engine) Run(ctx context.Context, cfg config.Config) error {
+func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCM) error {
 	promptPath, err := e.resolvePromptPath(cfg.Review.PromptDir, cfg.Review.PromptType)
 	if err != nil {
 		return fmt.Errorf("prompt resolution failed: %w", err)
@@ -29,6 +30,13 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config) error {
 	if cfg.System.LogLevel == "debug" {
 		fmt.Printf("\n--- [DEBUG] LOADED PROMPT (%s) ---\n%s\n------------------------------------\n", promptPath, string(promptContent))
 	}
+
+	pr, err := scmClient.GetPullRequest(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PullRequestID)
+	if err != nil {
+		return fmt.Errorf("failed to get pull request: %w", err)
+	}
+
+	fmt.Println(pr)
 
 	return nil
 }

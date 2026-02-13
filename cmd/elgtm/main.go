@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +12,7 @@ import (
 	"github.com/fzl-22/elgtm/internal/config"
 	"github.com/fzl-22/elgtm/internal/logger"
 	"github.com/fzl-22/elgtm/internal/reviewer"
+	"github.com/fzl-22/elgtm/internal/scm"
 )
 
 func main() {
@@ -36,8 +38,17 @@ func main() {
 		"system_timeout", timeoutDuration.String(),
 	)
 
+	httpClient := http.Client{}
+
+	var scmClient scm.SCM
+	if cfg.SCM.Platform == "github" {
+		scmClient = scm.NewGitHubClient(&httpClient, cfg.SCM.Token)
+	} else {
+		slog.Error("Unsupported SCM platform", "error", err)
+	}
+
 	engine := reviewer.NewEngine()
-	if err := engine.Run(ctx, *cfg); err != nil {
+	if err := engine.Run(ctx, *cfg, scmClient); err != nil {
 		slog.Error("Review failed", "error", err)
 		os.Exit(1)
 	}
