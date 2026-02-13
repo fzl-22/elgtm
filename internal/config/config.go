@@ -27,7 +27,7 @@ type SCM struct {
 	Platform      string `mapstructure:"platform"`
 	Token         string `mapstructure:"token"`
 	Owner         string `mapstructure:"owner"`
-	Repository    string `mapstructure:"repository"`
+	Repo          string `mapstructure:"repo"`
 	PullRequestID int    `mapstructure:"pr_id"`
 }
 
