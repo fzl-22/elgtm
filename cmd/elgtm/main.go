@@ -38,7 +38,7 @@ func main() {
 		"system_timeout", timeoutDuration.String(),
 	)
 
-	httpClient := http.Client{}
+	httpClient := http.Client{Timeout: timeoutDuration}
 
 	var scmClient scm.SCM
 	if cfg.SCM.Platform == "github" {
