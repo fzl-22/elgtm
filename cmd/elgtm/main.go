@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/fzl-22/elgtm/internal/config"
+	"github.com/fzl-22/elgtm/internal/logger"
 	"github.com/fzl-22/elgtm/internal/reviewer"
 )
 
@@ -19,7 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	setupLogger(cfg.System.LogLevel)
+	logger.Setup(cfg.System.LogLevel)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -29,9 +30,10 @@ func main() {
 	defer cancel()
 
 	slog.Info("Starting ELGTM",
-		"platform", cfg.SCM.Platform,
-		"provider", cfg.LLM.Provider,
-		"timeout", timeoutDuration.String(),
+		"scm_platform", cfg.SCM.Platform,
+		"llm_provider", cfg.LLM.Provider,
+		"system_log_level", cfg.System.LogLevel,
+		"system_timeout", timeoutDuration.String(),
 	)
 
 	engine := reviewer.NewEngine()
@@ -41,22 +43,4 @@ func main() {
 	}
 
 	slog.Info("Review completed successfully")
-}
-
-func setupLogger(levelStr string) {
-	var level slog.Level
-	switch levelStr {
-	case "debug":
-		level = slog.LevelDebug
-	case "warn":
-		level = slog.LevelWarn
-	case "error":
-		level = slog.LevelError
-	default:
-		level = slog.LevelInfo
-	}
-
-	opts := &slog.HandlerOptions{Level: level}
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, opts))
-	slog.SetDefault(logger)
 }
