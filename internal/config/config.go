@@ -26,8 +26,8 @@ type LLM struct {
 type SCM struct {
 	Platform      string `mapstructure:"platform"`
 	Token         string `mapstructure:"token"`
-	RepoOwner     string `mapstructure:"repo_owner"`
-	RepoName      string `mapstructure:"repo_name"`
+	Owner         string `mapstructure:"owner"`
+	Repository    string `mapstructure:"repository"`
 	PullRequestID int    `mapstructure:"pr_id"`
 }
 
