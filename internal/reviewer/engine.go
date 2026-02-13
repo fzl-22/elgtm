@@ -31,7 +31,7 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCM) 
 		fmt.Printf("\n--- [DEBUG] LOADED PROMPT (%s) ---\n%s\n------------------------------------\n", promptPath, string(promptContent))
 	}
 
-	pr, err := scmClient.GetPullRequest(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PullRequestID)
+	pr, err := scmClient.GetPullRequest(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber)
 	if err != nil {
 		return fmt.Errorf("failed to get pull request: %w", err)
 	}

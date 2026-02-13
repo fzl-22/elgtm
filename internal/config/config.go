@@ -24,11 +24,11 @@ type LLM struct {
 }
 
 type SCM struct {
-	Platform      string `mapstructure:"platform"`
-	Token         string `mapstructure:"token"`
-	Owner         string `mapstructure:"owner"`
-	Repo          string `mapstructure:"repo"`
-	PullRequestID int    `mapstructure:"pr_id"`
+	Platform string `mapstructure:"platform"`
+	Token    string `mapstructure:"token"`
+	Owner    string `mapstructure:"owner"`
+	Repo     string `mapstructure:"repo"`
+	PRNumber int    `mapstructure:"pr_number"`
 }
 
 type Review struct {
