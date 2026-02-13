@@ -40,7 +40,7 @@ func main() {
 
 	httpClient := http.Client{Timeout: timeoutDuration}
 
-	var scmClient scm.SCM
+	var scmClient scm.SCMClient
 	if cfg.SCM.Platform == "github" {
 		scmClient = scm.NewGitHubClient(&httpClient, cfg.SCM)
 	} else {

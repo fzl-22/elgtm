@@ -16,7 +16,7 @@ func NewEngine() *Engine {
 	return &Engine{}
 }
 
-func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCM) error {
+func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMClient) error {
 	promptPath, err := e.resolvePromptPath(cfg.Review.PromptDir, cfg.Review.PromptType)
 	if err != nil {
 		return fmt.Errorf("prompt resolution failed: %w", err)
