@@ -48,6 +48,15 @@ func New() (*Config, error) {
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
+	v.SetDefault("review.prompt_dir", ".reviewer")
+	v.SetDefault("review.prompt_type", "general")
+	v.SetDefault("review.language", "en")
+	v.SetDefault("system.log_level", "info")
+	v.SetDefault("system.timeout", 300)
+
+	v.SetDefault("llm.temperature", 0.2)
+	v.SetDefault("llm.max_tokens", 4096)
+
 	bindEnvs(v, Config{})
 
 	var cfg Config
