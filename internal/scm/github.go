@@ -66,3 +66,15 @@ func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, n
 		UpdatedAt: pr.UpdatedAt.Time,
 	}, nil
 }
+
+func (c *GitHubClient) PostIssueComment(ctx context.Context, owner, repo string, number int, comment *IssueComment) error {
+	issueComment := github.IssueComment{
+		Body: comment.Body,
+	}
+	_, _, err := c.client.Issues.CreateComment(ctx, owner, repo, number, &issueComment)
+	if err != nil {
+		return fmt.Errorf("failed to post review comment: %w", err)
+	}
+
+	return nil
+}

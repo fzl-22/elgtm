@@ -38,7 +38,12 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMCl
 
 	fmt.Println(pr)
 
-	return nil
+	commentBody := "Hi, It is a test comment!"
+	err = scmClient.PostIssueComment(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber, &scm.IssueComment{
+		Body: &commentBody,
+	})
+
+	return err
 }
 
 func (e *Engine) resolvePromptPath(userDir, promptType string) (string, error) {
