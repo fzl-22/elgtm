@@ -1,0 +1,61 @@
+name: 'ELGTM (Enhanced LGTM) - AI Code Review'
+description: 'Automated pull request reviews using LLMs'
+author: 'fzl-22'
+
+inputs:
+  llm_provider:
+    description: 'LLM Provider (e.g., gemini)'
+    required: true
+  llm_model:
+    description: 'Model ID to use (e.g., gemini-2.5-flash)'
+    required: true
+  llm_api_key:
+    description: 'API Key for the LLM provider or model'
+    required: true
+  llm_temperature:
+    description: 'Sampling temperature (0.0 to 1.0)'
+    required: false
+    default: '0.2'
+  llm_max_tokens:
+    description: 'Maximum number of tokens to generate'
+    required: false
+    default: '2048'
+  github_token:
+    description: 'GitHub Token to post comments (default: automatic)'
+    required: false
+    default: ${{ github.token }}
+  max_diff_size:
+    description: 'Maximum diff size to process (default: 2097152 characters)'
+    required: false
+    default: '2097152'
+  prompt_type:
+    description: 'Type of prompt to use (matches filename in .reviewer/)'
+    required: false
+    default: 'general'
+
+runs:
+  using: composite
+  steps:
+    - name: Run ELGTM Container
+      shell: bash
+      env:
+        DOCKER_IMAGE: docker.io/amfaisal/elgtm:latest
+      run: |
+        echo "Starting ELGTM Review using $DOCKER_IMAGE..."
+        
+        docker run --rm \
+          -e LLM_PROVIDER=${{ inputs.llm_provider }} \
+          -e LLM_MODEL="${{ inputs.llm_model }}" \
+          -e LLM_API_KEY="${{ inputs.llm_api_key }}" \
+          -e LLM_TEMPERATURE=${{ inputs.llm_temperature }} \
+          -e LLM_MAX_TOKENS=${{ inputs.llm_max_tokens }} \
+          -e SCM_PLATFORM="github" \
+          -e SCM_TOKEN="${{ inputs.github_token }}" \
+          -e SCM_OWNER="${{ github.repository_owner }}" \
+          -e SCM_REPO="${{ github.event.repository.name }}" \
+          -e SCM_PR_NUMBER="${{ github.event.pull_request.number }}" \
+          -e SCM_MAX_DIFF_SIZE=${{ inputs.max_diff_size }} \
+          -e REVIEW_PROMPT_TYPE="${{ inputs.prompt_type }}" \
+          -v ${{ github.workspace }}:/workspace \
+          $DOCKER_IMAGE
+
