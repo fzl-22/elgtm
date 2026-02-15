@@ -3,6 +3,7 @@ package reviewer
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -28,7 +29,7 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMCl
 	}
 
 	if cfg.System.LogLevel == "debug" {
-		fmt.Printf("\n--- [DEBUG] LOADED PROMPT (%s) ---\n%s\n------------------------------------\n", promptPath, string(promptContent))
+		slog.Debug("Loaded Prompt", "path", promptPath, "content_length", len(promptContent))
 	}
 
 	pr, err := scmClient.GetPullRequest(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber)
@@ -36,9 +37,10 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMCl
 		return fmt.Errorf("failed to get pull request: %w", err)
 	}
 
-	fmt.Println(pr)
+	slog.Info("PR Fetched", "pr_number", pr.Number, "title", pr.Title, "diff_size", len(pr.RawDiff))
 
-	commentBody := "Hi, It is a test comment!"
+	commentBody := "Hi, It is a test comment from ELGTM!"
+
 	err = scmClient.PostIssueComment(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber, &scm.IssueComment{
 		Body: &commentBody,
 	})
