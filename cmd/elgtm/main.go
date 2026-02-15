@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -41,10 +42,16 @@ func main() {
 	httpClient := http.Client{Timeout: timeoutDuration}
 
 	var scmClient scm.SCMClient
+	var scmErr error
 	if cfg.SCM.Platform == "github" {
 		scmClient = scm.NewGitHubClient(&httpClient, cfg.SCM)
 	} else {
-		slog.Error("Unsupported SCM platform", "error", err)
+		scmErr = fmt.Errorf("unsupported platform: %s", cfg.SCM.Platform)
+	}
+
+	if scmErr != nil {
+		slog.Error("SCM initialization failed", "error", scmErr)
+		os.Exit(1)
 	}
 
 	engine := reviewer.NewEngine()
