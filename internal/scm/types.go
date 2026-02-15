@@ -13,3 +13,7 @@ type PullRequest struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type IssueComment struct {
+	Body *string
+}
