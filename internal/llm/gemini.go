@@ -33,14 +33,19 @@ func NewGeminiClient(ctx context.Context, cfg config.LLM) (LLMClient, error) {
 }
 
 func (c *GeminiClient) GenerateContent(ctx context.Context, prompt string) (string, error) {
-	temp := c.cfg.Temperature
-	resp, err := c.client.Models.GenerateContent(ctx, c.cfg.Model, genai.Text(prompt), &genai.GenerateContentConfig{
-		Temperature:      &temp,
-		ResponseMIMEType: "text/plain",
-	})
+	contentConfig := c.buildContentConfig()
+	resp, err := c.client.Models.GenerateContent(ctx, c.cfg.Model, genai.Text(prompt), contentConfig)
 	if err != nil {
 		return "", fmt.Errorf("failed to generate content: %w", err)
 	}
 
 	return resp.Text(), nil
+}
+
+func (c *GeminiClient) buildContentConfig() *genai.GenerateContentConfig {
+	return &genai.GenerateContentConfig{
+		Temperature:      &c.cfg.Temperature,
+		MaxOutputTokens:  int32(c.cfg.MaxTokens),
+		ResponseMIMEType: "text/plain",
+	}
 }
