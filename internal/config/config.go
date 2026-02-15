@@ -19,7 +19,7 @@ type LLM struct {
 	Provider    string  `mapstructure:"provider"`
 	Model       string  `mapstructure:"model"`
 	APIKey      string  `mapstructure:"api_key"`
-	Temperature float64 `mapstructure:"temperature"`
+	Temperature float32 `mapstructure:"temperature"`
 	MaxTokens   int     `mapstructure:"max_tokens"`
 }
 

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/fzl-22/elgtm/internal/config"
+	"github.com/fzl-22/elgtm/internal/llm"
 	"github.com/fzl-22/elgtm/internal/scm"
 )
 
@@ -17,7 +18,7 @@ func NewEngine() *Engine {
 	return &Engine{}
 }
 
-func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMClient) error {
+func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMClient, llmClient llm.LLMClient) error {
 	promptPath, err := e.resolvePromptPath(cfg.Review.PromptDir, cfg.Review.PromptType)
 	if err != nil {
 		return fmt.Errorf("prompt resolution failed: %w", err)
@@ -39,10 +40,12 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMCl
 
 	slog.Info("PR Fetched", "pr_number", pr.Number, "title", pr.Title, "author", pr.Author, "diff_size", len(pr.RawDiff))
 
-	commentBody := "Hi, It is a test comment from ELGTM!"
+	issueComment, err := llmClient.GenerateIssueComment(ctx, *pr)
+
+	slog.Info("Posting comment", "repo", cfg.SCM.Repo, "pr", cfg.SCM.PRNumber)
 
 	err = scmClient.PostIssueComment(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber, &scm.IssueComment{
-		Body: &commentBody,
+		Body: issueComment.Body,
 	})
 
 	return err

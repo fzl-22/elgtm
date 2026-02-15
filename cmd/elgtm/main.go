@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/fzl-22/elgtm/internal/config"
+	"github.com/fzl-22/elgtm/internal/llm"
 	"github.com/fzl-22/elgtm/internal/logger"
 	"github.com/fzl-22/elgtm/internal/reviewer"
 	"github.com/fzl-22/elgtm/internal/scm"
@@ -54,8 +55,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	var llmClient llm.LLMClient
+	var llmErr error
+	if cfg.LLM.Provider == "gemini" {
+		llmClient, llmErr = llm.NewGeminiClient(ctx, cfg.LLM)
+	} else {
+		llmErr = fmt.Errorf("unsupported LLM provider: %s", cfg.LLM.Provider)
+	}
+
+	if llmErr != nil {
+		slog.Error("LLM initialization failed", "error", llmErr)
+		os.Exit(1)
+	}
+
 	engine := reviewer.NewEngine()
-	if err := engine.Run(ctx, *cfg, scmClient); err != nil {
+	if err := engine.Run(ctx, *cfg, scmClient, llmClient); err != nil {
 		slog.Error("Review failed", "error", err)
 		os.Exit(1)
 	}
