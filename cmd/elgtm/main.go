@@ -2,19 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/fzl-22/elgtm/internal/config"
-	"github.com/fzl-22/elgtm/internal/llm"
 	"github.com/fzl-22/elgtm/internal/logger"
-	"github.com/fzl-22/elgtm/internal/reviewer"
-	"github.com/fzl-22/elgtm/internal/scm"
 )
 
 func main() {
@@ -40,35 +35,12 @@ func main() {
 		"system_timeout", timeoutDuration.String(),
 	)
 
-	httpClient := http.Client{Timeout: timeoutDuration}
-
-	var scmClient scm.SCMClient
-	var scmErr error
-	if cfg.SCM.Platform == "github" {
-		scmClient = scm.NewGitHubClient(&httpClient, cfg.SCM)
-	} else {
-		scmErr = fmt.Errorf("unsupported platform: %s", cfg.SCM.Platform)
-	}
-
-	if scmErr != nil {
-		slog.Error("SCM initialization failed", "error", scmErr)
+	engine, err := Initialize(ctx, cfg)
+	if err != nil {
+		slog.Error("Initialization failed", "error", err)
 		os.Exit(1)
 	}
 
-	var llmClient llm.LLMClient
-	var llmErr error
-	if cfg.LLM.Provider == "gemini" {
-		llmClient, llmErr = llm.NewGeminiClient(ctx, cfg.LLM)
-	} else {
-		llmErr = fmt.Errorf("unsupported LLM provider: %s", cfg.LLM.Provider)
-	}
-
-	if llmErr != nil {
-		slog.Error("LLM initialization failed", "error", llmErr)
-		os.Exit(1)
-	}
-
-	engine := reviewer.NewEngine(*cfg, scmClient, llmClient)
 	if err := engine.Run(ctx); err != nil {
 		slog.Error("Review failed", "error", err)
 		os.Exit(1)
