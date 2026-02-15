@@ -7,6 +7,7 @@ type PullRequest struct {
 	Number    int
 	Title     string
 	Body      string
+	Author    string
 	URL       string
 	DiffURL   string
 	RawDiff   string

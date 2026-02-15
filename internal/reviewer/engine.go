@@ -37,7 +37,7 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMCl
 		return fmt.Errorf("failed to get pull request: %w", err)
 	}
 
-	slog.Info("PR Fetched", "pr_number", pr.Number, "title", pr.Title, "diff_size", len(pr.RawDiff))
+	slog.Info("PR Fetched", "pr_number", pr.Number, "title", pr.Title, "author", pr.Author, "diff_size", len(pr.RawDiff))
 
 	commentBody := "Hi, It is a test comment from ELGTM!"
 

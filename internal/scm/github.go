@@ -59,6 +59,7 @@ func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, n
 		Number:    *pr.Number,
 		Title:     *pr.Title,
 		Body:      *pr.Body,
+		Author:    *pr.User.Login,
 		URL:       *pr.URL,
 		DiffURL:   *pr.DiffURL,
 		RawDiff:   string(diffBytes),
