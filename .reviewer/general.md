@@ -30,3 +30,15 @@ Return your review in GitHub Markdown format:
 
 ## 🟢 Minor
 * `file.ext`: Naming conventions or clean code suggestions.
+
+# Context to Review
+
+**Title**: {{ .Title }}
+**Author**: {{ .Author }}
+**Description**:
+{{ .Body }}
+
+**Code Changes (Diff)**:
+```text
+{{ .RawDiff }}
+```

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/fzl-22/elgtm/internal/config"
-	"github.com/fzl-22/elgtm/internal/scm"
 	"google.golang.org/genai"
 )
 
@@ -33,20 +32,15 @@ func NewGeminiClient(ctx context.Context, cfg config.LLM) (LLMClient, error) {
 	}, nil
 }
 
-func (c *GeminiClient) GenerateIssueComment(ctx context.Context, pullRequest scm.PullRequest) (*scm.IssueComment, error) {
-	prompt := fmt.Sprintf("Please review this: %+v", pullRequest)
-
+func (c *GeminiClient) GenerateContent(ctx context.Context, prompt string) (string, error) {
 	temp := c.cfg.Temperature
-	generatedContent, err := c.client.Models.GenerateContent(ctx, c.cfg.Model, genai.Text(prompt), &genai.GenerateContentConfig{
+	resp, err := c.client.Models.GenerateContent(ctx, c.cfg.Model, genai.Text(prompt), &genai.GenerateContentConfig{
 		Temperature:      &temp,
-		ResponseMIMEType: "application/json",
+		ResponseMIMEType: "text/plain",
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate content: %w", err)
+		return "", fmt.Errorf("failed to generate content: %w", err)
 	}
 
-	text := generatedContent.Text()
-	return &scm.IssueComment{
-		Body: &text,
-	}, nil
+	return resp.Text(), nil
 }

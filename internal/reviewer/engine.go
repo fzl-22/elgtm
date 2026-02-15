@@ -10,6 +10,7 @@ import (
 	"github.com/fzl-22/elgtm/internal/config"
 	"github.com/fzl-22/elgtm/internal/llm"
 	"github.com/fzl-22/elgtm/internal/scm"
+	"github.com/fzl-22/elgtm/internal/tmpl"
 )
 
 type Engine struct {
@@ -48,12 +49,22 @@ func (e *Engine) Run(ctx context.Context) error {
 
 	slog.Info("PR Fetched", "pr_number", pr.Number, "title", pr.Title, "author", pr.Author, "diff_size", len(pr.RawDiff))
 
-	issueComment, err := e.llmClient.GenerateIssueComment(ctx, *pr)
+	prompt, err := tmpl.Generate(e.cfg.Review.PromptType, string(promptContent), *pr)
+	if err != nil {
+		return fmt.Errorf("prompt generation failed: %w", err)
+	}
+
+	slog.Info("Prompt Generated", "length", len(prompt))
+
+	reviewBody, err := e.llmClient.GenerateContent(ctx, prompt)
+	if err != nil {
+		return fmt.Errorf("failed to generate review: %w", err)
+	}
 
 	slog.Info("Posting comment", "repo", e.cfg.SCM.Repo, "pr", e.cfg.SCM.PRNumber)
 
 	err = e.scmClient.PostIssueComment(ctx, e.cfg.SCM.Owner, e.cfg.SCM.Repo, e.cfg.SCM.PRNumber, &scm.IssueComment{
-		Body: issueComment.Body,
+		Body: &reviewBody,
 	})
 
 	return err
