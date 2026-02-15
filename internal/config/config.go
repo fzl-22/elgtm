@@ -9,27 +9,35 @@ import (
 )
 
 type Config struct {
-	LLM    LLM    `mapstructure:"llm"`
 	SCM    SCM    `mapstructure:"scm"`
+	LLM    LLM    `mapstructure:"llm"`
 	Review Review `mapstructure:"review"`
 	System System `mapstructure:"system"`
 }
 
-type LLM struct {
-	Provider    string  `mapstructure:"provider"`
-	Model       string  `mapstructure:"model"`
-	APIKey      string  `mapstructure:"api_key"`
-	Temperature float32 `mapstructure:"temperature"`
-	MaxTokens   int     `mapstructure:"max_tokens"`
-}
+type SCMPlatform string
+
+const PlatformGitHub SCMPlatform = "github"
 
 type SCM struct {
-	Platform    string `mapstructure:"platform"`
-	Token       string `mapstructure:"token"`
-	Owner       string `mapstructure:"owner"`
-	Repo        string `mapstructure:"repo"`
-	PRNumber    int    `mapstructure:"pr_number"`
-	MaxDiffSize int64  `mapstructure:"max_diff_size"`
+	Platform    SCMPlatform `mapstructure:"platform"`
+	Token       string      `mapstructure:"token"`
+	Owner       string      `mapstructure:"owner"`
+	Repo        string      `mapstructure:"repo"`
+	PRNumber    int         `mapstructure:"pr_number"`
+	MaxDiffSize int64       `mapstructure:"max_diff_size"`
+}
+
+type LLMProvider string
+
+const ProviderGemini LLMProvider = "gemini"
+
+type LLM struct {
+	Provider    LLMProvider `mapstructure:"provider"`
+	Model       string      `mapstructure:"model"`
+	APIKey      string      `mapstructure:"api_key"`
+	Temperature float32     `mapstructure:"temperature"`
+	MaxTokens   int         `mapstructure:"max_tokens"`
 }
 
 type Review struct {

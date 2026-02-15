@@ -16,12 +16,16 @@ type GitHubClient struct {
 	cfg        config.SCM
 }
 
-func NewGitHubClient(httpClient *http.Client, cfg config.SCM) SCMClient {
+func NewGitHubClient(httpClient *http.Client, cfg config.SCM) (SCMClient, error) {
+	if cfg.Token == "" {
+		return nil, fmt.Errorf("github token is missing")
+	}
+
 	return &GitHubClient{
 		client:     github.NewClient(httpClient).WithAuthToken(cfg.Token),
 		httpClient: httpClient,
 		cfg:        cfg,
-	}
+	}, nil
 }
 
 func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, number int) (*PullRequest, error) {
