@@ -59,16 +59,17 @@ func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, n
 	}
 
 	return &PullRequest{
-		ID:        *pr.ID,
-		Number:    *pr.Number,
-		Title:     *pr.Title,
-		Body:      *pr.Body,
-		Author:    *pr.User.Login,
-		URL:       *pr.URL,
-		DiffURL:   *pr.DiffURL,
+		ID:        pr.GetID(),
+		Number:    pr.GetNumber(),
+		Title:     pr.GetTitle(),
+		Body:      pr.GetBody(),
+		Author:    pr.GetUser().GetLogin(),
+		URL:       pr.GetURL(),
+		HTMLURL:   pr.GetHTMLURL(),
+		DiffURL:   pr.GetDiffURL(),
 		RawDiff:   string(diffBytes),
-		CreatedAt: pr.CreatedAt.Time,
-		UpdatedAt: pr.UpdatedAt.Time,
+		CreatedAt: pr.GetCreatedAt().Time,
+		UpdatedAt: pr.GetUpdatedAt().Time,
 	}, nil
 }
 

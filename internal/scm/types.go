@@ -9,6 +9,7 @@ type PullRequest struct {
 	Body      string
 	Author    string
 	URL       string
+	HTMLURL   string
 	DiffURL   string
 	RawDiff   string
 	CreatedAt time.Time
