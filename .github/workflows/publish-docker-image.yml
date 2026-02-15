@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - 'v*'
-    branches:
-      - 'master' # will be turned off when this repository is stable
 
   workflow_dispatch:
 
