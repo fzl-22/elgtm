@@ -58,6 +58,11 @@ func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, n
 		return nil, fmt.Errorf("failed to read diff: %w", err)
 	}
 
+	if int64(len(diffBytes)) == c.cfg.MaxDiffSize {
+		truncationMessage := "\n\n... [DIFF TRUNCATED DUE TO SIZE LIMIT] ..."
+		diffBytes = append(diffBytes, []byte(truncationMessage)...)
+	}
+
 	return &PullRequest{
 		ID:        pr.GetID(),
 		Number:    pr.GetNumber(),
