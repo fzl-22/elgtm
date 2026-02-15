@@ -12,14 +12,22 @@ import (
 	"github.com/fzl-22/elgtm/internal/scm"
 )
 
-type Engine struct{}
-
-func NewEngine() *Engine {
-	return &Engine{}
+type Engine struct {
+	cfg       config.Config
+	scmClient scm.SCMClient
+	llmClient llm.LLMClient
 }
 
-func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMClient, llmClient llm.LLMClient) error {
-	promptPath, err := e.resolvePromptPath(cfg.Review.PromptDir, cfg.Review.PromptType)
+func NewEngine(cfg config.Config, scmClient scm.SCMClient, llmClient llm.LLMClient) *Engine {
+	return &Engine{
+		cfg:       cfg,
+		scmClient: scmClient,
+		llmClient: llmClient,
+	}
+}
+
+func (e *Engine) Run(ctx context.Context) error {
+	promptPath, err := e.resolvePromptPath(e.cfg.Review.PromptDir, e.cfg.Review.PromptType)
 	if err != nil {
 		return fmt.Errorf("prompt resolution failed: %w", err)
 	}
@@ -29,22 +37,22 @@ func (e *Engine) Run(ctx context.Context, cfg config.Config, scmClient scm.SCMCl
 		return fmt.Errorf("failed to load prompt file [%s]: %w", promptPath, err)
 	}
 
-	if cfg.System.LogLevel == "debug" {
+	if e.cfg.System.LogLevel == "debug" {
 		slog.Debug("Loaded Prompt", "path", promptPath, "content_length", len(promptContent))
 	}
 
-	pr, err := scmClient.GetPullRequest(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber)
+	pr, err := e.scmClient.GetPullRequest(ctx, e.cfg.SCM.Owner, e.cfg.SCM.Repo, e.cfg.SCM.PRNumber)
 	if err != nil {
 		return fmt.Errorf("failed to get pull request: %w", err)
 	}
 
 	slog.Info("PR Fetched", "pr_number", pr.Number, "title", pr.Title, "author", pr.Author, "diff_size", len(pr.RawDiff))
 
-	issueComment, err := llmClient.GenerateIssueComment(ctx, *pr)
+	issueComment, err := e.llmClient.GenerateIssueComment(ctx, *pr)
 
-	slog.Info("Posting comment", "repo", cfg.SCM.Repo, "pr", cfg.SCM.PRNumber)
+	slog.Info("Posting comment", "repo", e.cfg.SCM.Repo, "pr", e.cfg.SCM.PRNumber)
 
-	err = scmClient.PostIssueComment(ctx, cfg.SCM.Owner, cfg.SCM.Repo, cfg.SCM.PRNumber, &scm.IssueComment{
+	err = e.scmClient.PostIssueComment(ctx, e.cfg.SCM.Owner, e.cfg.SCM.Repo, e.cfg.SCM.PRNumber, &scm.IssueComment{
 		Body: issueComment.Body,
 	})
 

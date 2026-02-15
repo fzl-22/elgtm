@@ -68,8 +68,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	engine := reviewer.NewEngine()
-	if err := engine.Run(ctx, *cfg, scmClient, llmClient); err != nil {
+	engine := reviewer.NewEngine(*cfg, scmClient, llmClient)
+	if err := engine.Run(ctx); err != nil {
 		slog.Error("Review failed", "error", err)
 		os.Exit(1)
 	}
