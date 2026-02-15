@@ -16,7 +16,7 @@ type GitHubClient struct {
 	cfg        config.SCM
 }
 
-func NewGitHubClient(httpClient *http.Client, cfg config.SCM) *GitHubClient {
+func NewGitHubClient(httpClient *http.Client, cfg config.SCM) SCMClient {
 	return &GitHubClient{
 		client:     github.NewClient(httpClient).WithAuthToken(cfg.Token),
 		httpClient: httpClient,
