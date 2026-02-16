@@ -7,32 +7,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerate_Success(t *testing.T) {
-	data := struct{ Name string }{Name: "ELGTM"}
-	content := "Hello {{.Name}}!"
+func TestGenerate(t *testing.T) {
+	t.Run("Success_ValidTemplate", func(t *testing.T) {
+		data := struct{ Name string }{Name: "ELGTM"}
+		content := "Hello {{.Name}}!"
 
-	res, err := tmpl.Generate("test", content, data)
+		res, err := tmpl.Generate("test", content, data)
 
-	assert.NoError(t, err)
-	assert.Equal(t, "Hello ELGTM!", res)
-}
+		assert.NoError(t, err)
+		assert.Equal(t, "Hello ELGTM!", res)
+	})
 
-func TestGenerate_ParseError(t *testing.T) {
-	data := struct{ Name string }{Name: "ELGTM"}
-	content := "Hello {{.Name}"
+	t.Run("Failure_InvalidTemplateSyntax", func(t *testing.T) {
+		data := struct{ Name string }{Name: "ELGTM"}
+		content := "Hello {{.Name}"
 
-	_, err := tmpl.Generate("test", content, data)
+		_, err := tmpl.Generate("test", content, data)
 
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to parse template")
-}
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to parse template")
+	})
 
-func TestGenerate_ExecuteError(t *testing.T) {
-	data := struct{ Name string }{Name: "ELGTM"}
-	content := "Hello {{.NonExistentValue}}"
+	t.Run("Failure_InvalidTemplateData", func(t *testing.T) {
+		data := struct{ Name string }{Name: "ELGTM"}
+		content := "Hello {{.NonExistentValue}}"
 
-	_, err := tmpl.Generate("test", content, data)
+		_, err := tmpl.Generate("test", content, data)
 
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to execute template")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to execute template")
+	})
 }
