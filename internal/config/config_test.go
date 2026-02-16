@@ -89,4 +89,17 @@ func TestNewConfig(t *testing.T) {
 		assert.Equal(t, "info", cfg.System.LogLevel)
 		assert.Equal(t, 300, cfg.System.Timeout)
 	})
+
+	t.Run("Failure_InvalidEnvVarType", func(t *testing.T) {
+		os.Clearenv()
+		defer os.Clearenv()
+
+		setEnv(t, "SCM_PR_NUMBER", "not-a-number")
+
+		cfg, err := config.NewConfig()
+
+		assert.Error(t, err)
+		assert.Nil(t, cfg)
+		assert.Contains(t, err.Error(), "unable to decode into struct")
+	})
 }
