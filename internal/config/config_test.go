@@ -27,7 +27,7 @@ func TestNewConfig_ReadsEnvVars(t *testing.T) {
 	os.Setenv("SYSTEM_TIMEOUT", "60")                // Default: 30
 	defer os.Clearenv()
 
-	cfg, err := config.New()
+	cfg, err := config.NewConfig()
 
 	assert.NoError(t, err)
 	assert.Equal(t, config.LLMProvider("claude"), cfg.LLM.Provider)
@@ -59,7 +59,7 @@ func TestNewConfig_ReadsEnvVarsWithDefaultValue(t *testing.T) {
 	os.Setenv("SCM_PR_NUMBER", "123")
 	defer os.Clearenv()
 
-	cfg, err := config.New()
+	cfg, err := config.NewConfig()
 
 	assert.NoError(t, err)
 	assert.Equal(t, config.LLMProvider("claude"), cfg.LLM.Provider)
