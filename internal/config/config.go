@@ -51,7 +51,7 @@ type System struct {
 	Timeout  int    `mapstructure:"timeout"`
 }
 
-func New() (*Config, error) {
+func NewConfig() (*Config, error) {
 	v := viper.New()
 
 	v.AutomaticEnv()
