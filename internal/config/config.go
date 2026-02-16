@@ -62,8 +62,8 @@ func New() (*Config, error) {
 	v.SetDefault("llm.temperature", 0.2)
 	v.SetDefault("llm.max_tokens", 4096)
 
-	v.SetDefault("review.prompt_dir", ".reviewer")
 	v.SetDefault("review.prompt_type", "general")
+	v.SetDefault("review.prompt_dir", ".reviewer")
 	v.SetDefault("review.language", "en")
 
 	v.SetDefault("system.log_level", "info")
