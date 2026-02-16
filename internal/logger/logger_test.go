@@ -11,18 +11,19 @@ import (
 
 func TestSetup(t *testing.T) {
 	tests := []struct {
+		name     string
 		input    string
 		expected slog.Level
 	}{
-		{"debug", slog.LevelDebug},
-		{"warn", slog.LevelWarn},
-		{"error", slog.LevelError},
-		{"info", slog.LevelInfo},
-		{"other", slog.LevelInfo}, // default fallback
+		{"Success_DebugLevel", "debug", slog.LevelDebug},
+		{"Success_WarnLevel", "warn", slog.LevelWarn},
+		{"Success_ErrorLevel", "error", slog.LevelError},
+		{"Success_InfoLevel", "info", slog.LevelInfo},
+		{"Success_DefaultFallback", "other", slog.LevelInfo}, // default fallback
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.input, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			logger.Setup(tt.input)
 
 			l := slog.Default()
