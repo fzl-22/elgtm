@@ -69,17 +69,18 @@ func NewConfig() (*Config, error) {
 	v.SetDefault("system.log_level", "info")
 	v.SetDefault("system.timeout", 300)
 
-	bindEnvs(v, Config{})
+	cfg := &Config{}
 
-	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
+	BindEnvs(v, cfg)
+
+	if err := v.Unmarshal(cfg); err != nil {
 		return nil, fmt.Errorf("unable to decode into struct: %w", err)
 	}
 
-	return &cfg, nil
+	return cfg, nil
 }
 
-func bindEnvs(v *viper.Viper, iface any, parts ...string) {
+func BindEnvs(v *viper.Viper, iface any, parts ...string) {
 	ifv := reflect.ValueOf(iface)
 	ift := reflect.TypeOf(iface)
 
@@ -99,7 +100,7 @@ func bindEnvs(v *viper.Viper, iface any, parts ...string) {
 		keyPath := strings.Join(append(parts, tv), ".")
 
 		if fieldV.Kind() == reflect.Struct {
-			bindEnvs(v, fieldV.Interface(), append(parts, tv)...)
+			BindEnvs(v, fieldV.Interface(), append(parts, tv)...)
 		} else {
 			v.BindEnv(keyPath)
 		}

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/fzl-22/elgtm/internal/config"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -101,5 +102,54 @@ func TestNewConfig(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, cfg)
 		assert.Contains(t, err.Error(), "unable to decode into struct")
+	})
+}
+
+func TestBindEnvs(t *testing.T) {
+	setEnv := func(t *testing.T, key, value string) {
+		t.Helper()
+		os.Setenv(key, value)
+	}
+
+	t.Run("Success_BindAllEnvs", func(t *testing.T) {
+		type TestStruct struct {
+			MyField string `mapstructure:"my_field"`
+		}
+
+		v := viper.New()
+		v.AutomaticEnv()
+
+		input := &TestStruct{}
+
+		setEnv(t, "MY_FIELD", "it_works!")
+
+		config.BindEnvs(v, input)
+
+		err := v.Unmarshal(input)
+		assert.NoError(t, err)
+
+		assert.Equal(t, "it_works!", input.MyField)
+	})
+
+	t.Run("Success_IgnoreFieldWithoutTag", func(t *testing.T) {
+		type TestStruct struct {
+			TaggedField   string `mapstructure:"tagged_field"`
+			UntaggedField string
+		}
+
+		v := viper.New()
+		v.AutomaticEnv()
+
+		input := &TestStruct{}
+
+		setEnv(t, "TAGGED_FIELD", "I am found!")
+		setEnv(t, "UNTAGGED_FIELD", "I might be found by AutomaticEnv, but skipped by BindEnvs loop")
+
+		config.BindEnvs(v, input)
+
+		err := v.Unmarshal(input)
+		assert.NoError(t, err)
+
+		assert.Equal(t, "I am found!", input.TaggedField)
 	})
 }
