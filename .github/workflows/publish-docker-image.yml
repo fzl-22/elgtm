@@ -23,7 +23,24 @@ jobs:
           cache: true
 
       - name: Run tests
-        run: go test -v ./...
+        run: go test -v -coverprofile=coverage.out ./...
+      
+      - name: Display Coverage in CLI
+        run: go tool cover -func=coverage.out
+      
+      - name: Generate Job Summary
+        run: |
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | Coverage |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          
+          # parse coverage.out and format it into a markdown table
+          go tool cover -func=coverage.out | grep -v "total:" | sed 's/\t/ | /g' | sed 's/^/| /' | sed 's/$/ |/' >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Total Coverage" >> $GITHUB_STEP_SUMMARY
+          TOTAL=$(go tool cover -func=coverage.out | grep "total:" | awk '{print $3}')
+          echo "**$TOTAL**" >> $GITHUB_STEP_SUMMARY
 
   publish-image:
     name: Publish Docker Image
