@@ -21,7 +21,7 @@ func NewGeminiDriver(ctx context.Context, apiKey string) (*GeminiDriver, error) 
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create genai client: %w", err)
 	}
 
 	return &GeminiDriver{client: client}, nil
