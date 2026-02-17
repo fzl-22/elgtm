@@ -21,10 +21,11 @@ func NewClient(driver Driver, cfg config.LLM) Client {
 
 func (c *client) GenerateContent(ctx context.Context, prompt string) (string, error) {
 	req := GenerateRequest{
-		Model:       c.cfg.Model,
-		Prompt:      prompt,
-		Temperature: c.cfg.Temperature,
-		MaxTokens:   c.cfg.MaxTokens,
+		Model:            c.cfg.Model,
+		Prompt:           prompt,
+		Temperature:      c.cfg.Temperature,
+		MaxTokens:        c.cfg.MaxTokens,
+		ResponseMIMEType: "text/plain",
 	}
 
 	resp, err := c.driver.Generate(ctx, req)

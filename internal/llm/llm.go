@@ -13,10 +13,11 @@ type Client interface {
 }
 
 type GenerateRequest struct {
-	Model       string
-	Prompt      string
-	Temperature float32
-	MaxTokens   int
+	Model            string
+	Prompt           string
+	ResponseMIMEType string
+	Temperature      float32
+	MaxTokens        int
 }
 
 type GenerateResponse struct {
