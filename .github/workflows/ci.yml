@@ -32,17 +32,6 @@ jobs:
       - name: Generate Job Summary
         run: |
           echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo "| Package | Coverage |" >> $GITHUB_STEP_SUMMARY
-          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-          go tool cover -func=coverage.out | grep -v "total:" | sed 's/\t/ | /g' | sed 's/^/| /' | sed 's/$/ |/' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Total Coverage" >> $GITHUB_STEP_SUMMARY
-          TOTAL=$(go tool cover -func=coverage.out | grep "total:" | awk '{print $3}')
-          echo "**$TOTAL**" >> $GITHUB_STEP_SUMMARY
-
-      - name: Generate Job Summary
-        run: |
-          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "| File | Function | Coverage |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
           
