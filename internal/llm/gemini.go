@@ -12,10 +12,6 @@ type GeminiDriver struct {
 }
 
 func NewGeminiDriver(ctx context.Context, apiKey string) (*GeminiDriver, error) {
-	if apiKey == "" {
-		return nil, fmt.Errorf("missing Gemini API Key")
-	}
-
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
