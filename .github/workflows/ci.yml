@@ -38,11 +38,15 @@ jobs:
         run: |
           echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
 
+          echo "" >> $GITHUB_STEP_SUMMARY
+
           if [ "${{ github.actor }}" == "fzl-22" ]; then
             echo "> **Mode:** Full Suite (Unit + Integration)" >> $GITHUB_STEP_SUMMARY
           else
             echo "> **Mode:** Unit Tests Only" >> $GITHUB_STEP_SUMMARY
           fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
 
           echo "| File | Line | Function | Coverage |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
@@ -55,6 +59,7 @@ jobs:
           }' >> $GITHUB_STEP_SUMMARY
 
           echo "" >> $GITHUB_STEP_SUMMARY
+          
           echo "### Total Coverage" >> $GITHUB_STEP_SUMMARY
           TOTAL=$(go tool cover -func=coverage.out | grep "total:" | awk '{print $3}')
           echo "**$TOTAL**" >> $GITHUB_STEP_SUMMARY
