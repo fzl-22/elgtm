@@ -35,3 +35,15 @@ func (c *client) GenerateContent(ctx context.Context, prompt string) (string, er
 
 	return resp.Content, nil
 }
+
+type GenerateRequest struct {
+	Model            string
+	Prompt           string
+	ResponseMIMEType string
+	Temperature      float32
+	MaxTokens        int
+}
+
+type GenerateResponse struct {
+	Content string
+}
