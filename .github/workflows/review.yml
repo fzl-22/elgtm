@@ -1,0 +1,26 @@
+name: Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  review-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+    
+      - name: AI Code Review
+        uses: fzl-22/elgtm/action@v1.0.0-beta
+        with:
+            llm_provider: gemini
+            llm_model: gemini-2.5-flash
+            llm_api_key: ${{ secrets.GEMINI_API_KEY }}
+            llm_temperature: 0.1
+            llm_max_tokens: 4096
+            max_diff_size: 2097152

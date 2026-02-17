@@ -32,19 +32,20 @@ func Initialize(ctx context.Context, cfg *config.Config) (*reviewer.Engine, erro
 		return nil, fmt.Errorf("failed to initialize SCM client: %w", err)
 	}
 
-	// Initialize LLM
-	var llmClient llm.LLMClient
-
+	// Initialize LLM Driver
+	var llmDriver llm.Driver
 	switch cfg.LLM.Provider {
 	case config.ProviderGemini:
-		llmClient, err = llm.NewGeminiClient(ctx, cfg.LLM)
+		llmDriver, err = llm.NewGeminiDriver(ctx, cfg.LLM.APIKey)
 	default:
 		return nil, fmt.Errorf("unsupported LLM provider: %s", cfg.LLM.Provider)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize LLM client: %w", err)
+		return nil, fmt.Errorf("failed to initialize LLM driver: %w", err)
 	}
+
+	llmClient := llm.NewClient(llmDriver, cfg.LLM)
 
 	return reviewer.NewEngine(*cfg, scmClient, llmClient), nil
 }

@@ -4,48 +4,42 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fzl-22/elgtm/internal/config"
 	"google.golang.org/genai"
 )
 
-type GeminiClient struct {
+type GeminiDriver struct {
 	client *genai.Client
-	cfg    config.LLM
 }
 
-func NewGeminiClient(ctx context.Context, cfg config.LLM) (LLMClient, error) {
-	if cfg.APIKey == "" {
-		return nil, fmt.Errorf("gemini api key is missing")
+func NewGeminiDriver(ctx context.Context, apiKey string) (*GeminiDriver, error) {
+	if apiKey == "" {
+		return nil, fmt.Errorf("missing Gemini API Key")
 	}
 
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
-		APIKey:  cfg.APIKey,
+		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create gemini client: %w", err)
+		return nil, fmt.Errorf("failed to create Gemini SDK client: %w", err)
 	}
 
-	return &GeminiClient{
-		client: client,
-		cfg:    cfg,
-	}, nil
+	return &GeminiDriver{client: client}, nil
 }
 
-func (c *GeminiClient) GenerateContent(ctx context.Context, prompt string) (string, error) {
-	contentConfig := c.buildContentConfig()
-	resp, err := c.client.Models.GenerateContent(ctx, c.cfg.Model, genai.Text(prompt), contentConfig)
+func (d *GeminiDriver) Generate(ctx context.Context, req GenerateRequest) (*GenerateResponse, error) {
+	sdkConfig := &genai.GenerateContentConfig{
+		Temperature:      &req.Temperature,
+		MaxOutputTokens:  int32(req.MaxTokens),
+		ResponseMIMEType: req.ResponseMIMEType,
+	}
+
+	resp, err := d.client.Models.GenerateContent(ctx, req.Model, genai.Text(req.Prompt), sdkConfig)
 	if err != nil {
-		return "", fmt.Errorf("failed to generate content: %w", err)
+		return nil, fmt.Errorf("failed to generate content from Gemini API: %w", err)
 	}
 
-	return resp.Text(), nil
-}
-
-func (c *GeminiClient) buildContentConfig() *genai.GenerateContentConfig {
-	return &genai.GenerateContentConfig{
-		Temperature:      &c.cfg.Temperature,
-		MaxOutputTokens:  int32(c.cfg.MaxTokens),
-		ResponseMIMEType: "text/plain",
-	}
+	return &GenerateResponse{
+		Content: resp.Text(),
+	}, nil
 }
