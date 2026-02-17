@@ -2,6 +2,7 @@ package llm
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/genai"
 )
@@ -11,6 +12,10 @@ type GeminiDriver struct {
 }
 
 func NewGeminiDriver(ctx context.Context, apiKey string) (*GeminiDriver, error) {
+	if apiKey == "" {
+		return nil, fmt.Errorf("missing gemini api key")
+	}
+
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
 		Backend: genai.BackendGeminiAPI,
