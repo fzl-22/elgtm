@@ -1,0 +1,41 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - "master"
+    pull_request: 
+        branches:
+            - "master"
+    workflow_call:
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.3'
+          cache: true
+
+      - name: Run tests
+        run: go test -v -coverprofile=coverage.out ./...
+      
+      - name: Display Coverage in CLI
+        run: go tool cover -func=coverage.out
+      
+      - name: Generate Job Summary
+        run: |
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | Coverage |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          go tool cover -func=coverage.out | grep -v "total:" | sed 's/\t/ | /g' | sed 's/^/| /' | sed 's/$/ |/' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Total Coverage" >> $GITHUB_STEP_SUMMARY
+          TOTAL=$(go tool cover -func=coverage.out | grep "total:" | awk '{print $3}')
+          echo "**$TOTAL**" >> $GITHUB_STEP_SUMMARY
