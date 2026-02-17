@@ -16,10 +16,10 @@ import (
 type Engine struct {
 	cfg       config.Config
 	scmClient scm.SCMClient
-	llmClient llm.LLMClient
+	llmClient llm.Client
 }
 
-func NewEngine(cfg config.Config, scmClient scm.SCMClient, llmClient llm.LLMClient) *Engine {
+func NewEngine(cfg config.Config, scmClient scm.SCMClient, llmClient llm.Client) *Engine {
 	return &Engine{
 		cfg:       cfg,
 		scmClient: scmClient,
