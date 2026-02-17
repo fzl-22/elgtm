@@ -28,7 +28,7 @@ func NewEngine(cfg config.Config, scmClient scm.SCMClient, llmClient llm.LLMClie
 }
 
 func (e *Engine) Run(ctx context.Context) error {
-	promptPath, err := e.resolvePromptPath(e.cfg.Review.PromptDir, e.cfg.Review.PromptType)
+	promptPath, err := e.ResolvePromptPath(e.cfg.Review.PromptDir, e.cfg.Review.PromptType)
 	if err != nil {
 		return fmt.Errorf("prompt resolution failed: %w", err)
 	}
@@ -66,11 +66,14 @@ func (e *Engine) Run(ctx context.Context) error {
 	err = e.scmClient.PostIssueComment(ctx, e.cfg.SCM.Owner, e.cfg.SCM.Repo, e.cfg.SCM.PRNumber, &scm.IssueComment{
 		Body: &reviewBody,
 	})
+	if err != nil {
+		return fmt.Errorf("failed to post issue comment: %w", err)
+	}
 
-	return err
+	return nil
 }
 
-func (e *Engine) resolvePromptPath(userDir, promptType string) (string, error) {
+func (e *Engine) ResolvePromptPath(userDir, promptType string) (string, error) {
 	filename := fmt.Sprintf("%s.md", promptType)
 
 	// PRIORITY 1: User's local configuration

@@ -84,7 +84,7 @@ func (c *GitHubClient) PostIssueComment(ctx context.Context, owner, repo string,
 	}
 	_, _, err := c.client.Issues.CreateComment(ctx, owner, repo, number, &issueComment)
 	if err != nil {
-		return fmt.Errorf("failed to post review comment: %w", err)
+		return fmt.Errorf("failed to post issue comment: %w", err)
 	}
 
 	return nil
