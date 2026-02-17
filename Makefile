@@ -17,4 +17,14 @@ test-cov:
 test-html: test-cov
 	@go tool cover -html=coverage.out
 
-.PHONY: install build test test-cov test-html
+test-int:
+	@go test -tags=integration -v ./...
+
+test-int-cov:
+	@go test -tags=integration -coverprofile=coverage-int.out ./...
+	@go tool cover -func=coverage-int.out
+
+test-int-html: test-int-cov
+	@go tool cover -html=coverage-int.out
+
+.PHONY: install build test test-cov test-html test-int test-int-cov test-int-html
