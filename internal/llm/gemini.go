@@ -38,20 +38,3 @@ func (d *GeminiDriver) Generate(ctx context.Context, req GenerateRequest) (*Gene
 		Content: resp.Text(),
 	}, nil
 }
-
-func (c *GeminiDriver) GenerateContent(ctx context.Context, req GenerateRequest) (*GenerateResponse, error) {
-	sdkConfig := &genai.GenerateContentConfig{
-		Temperature:      &req.Temperature,
-		MaxOutputTokens:  int32(req.MaxTokens),
-		ResponseMIMEType: "text/plain",
-	}
-
-	resp, err := c.client.Models.GenerateContent(ctx, req.Model, genai.Text(req.Prompt), sdkConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	return &GenerateResponse{
-		Content: resp.Text(),
-	}, nil
-}
