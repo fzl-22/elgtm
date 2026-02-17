@@ -30,7 +30,7 @@ func (c *client) GenerateContent(ctx context.Context, prompt string) (string, er
 
 	resp, err := c.driver.Generate(ctx, req)
 	if err != nil {
-		return "", fmt.Errorf("driver error: %w", err)
+		return "", fmt.Errorf("failed to generate content using LLM driver: %w", err)
 	}
 
 	return resp.Content, nil

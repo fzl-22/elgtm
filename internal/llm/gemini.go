@@ -13,7 +13,7 @@ type GeminiDriver struct {
 
 func NewGeminiDriver(ctx context.Context, apiKey string) (*GeminiDriver, error) {
 	if apiKey == "" {
-		return nil, fmt.Errorf("missing gemini api key")
+		return nil, fmt.Errorf("missing Gemini API Key")
 	}
 
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
@@ -21,7 +21,7 @@ func NewGeminiDriver(ctx context.Context, apiKey string) (*GeminiDriver, error) 
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create genai client: %w", err)
+		return nil, fmt.Errorf("failed to create Gemini SDK client: %w", err)
 	}
 
 	return &GeminiDriver{client: client}, nil
@@ -36,7 +36,7 @@ func (d *GeminiDriver) Generate(ctx context.Context, req GenerateRequest) (*Gene
 
 	resp, err := d.client.Models.GenerateContent(ctx, req.Model, genai.Text(req.Prompt), sdkConfig)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to generate content from Gemini API: %w", err)
 	}
 
 	return &GenerateResponse{
