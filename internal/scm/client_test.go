@@ -36,6 +36,7 @@ func TestNewClient(t *testing.T) {
 		client := scm.NewClient(mockDriver, cfg.SCM)
 
 		assert.NotNil(t, client)
+		mockDriver.AssertExpectations(t)
 	})
 }
 
@@ -74,6 +75,7 @@ func TestGetPullRequest(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, pr)
 		assert.Equal(t, expectedPR, pr)
+		mockDriver.AssertExpectations(t)
 	})
 
 	t.Run("Failure_FailedToGetPullRequest", func(t *testing.T) {
@@ -91,6 +93,7 @@ func TestGetPullRequest(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to get pull request using SCM driver")
 		assert.Nil(t, pr)
+		mockDriver.AssertExpectations(t)
 	})
 }
 
@@ -114,6 +117,7 @@ func TestPostIssueComment(t *testing.T) {
 
 		assert.NotNil(t, client)
 		assert.NoError(t, err)
+		mockDriver.AssertExpectations(t)
 	})
 
 	t.Run("Failure_FailedToPostIssueComment", func(t *testing.T) {
@@ -134,5 +138,6 @@ func TestPostIssueComment(t *testing.T) {
 		assert.NotNil(t, client)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to post issue comment using SCM driver")
+		mockDriver.AssertExpectations(t)
 	})
 }
