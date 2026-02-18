@@ -32,6 +32,7 @@ func TestNewClient(t *testing.T) {
 		client := llm.NewClient(mockDriver, cfg.LLM)
 
 		assert.NotNil(t, client)
+		mockDriver.AssertExpectations(t)
 	})
 }
 
