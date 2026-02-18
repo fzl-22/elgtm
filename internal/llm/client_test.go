@@ -48,13 +48,12 @@ func TestGenerateContent(t *testing.T) {
 
 		client := llm.NewClient(mockDriver, cfg.LLM)
 
-		assert.NotNil(t, client)
-
 		content, err := client.GenerateContent(context.Background(), "Hi, I am a prompt")
+
+		assert.NotNil(t, client)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, content)
 		assert.Equal(t, content, "Looks Good To Me!")
-
 		mockDriver.AssertExpectations(t)
 	})
 
@@ -68,12 +67,11 @@ func TestGenerateContent(t *testing.T) {
 
 		client := llm.NewClient(mockDriver, cfg.LLM)
 
-		assert.NotNil(t, client)
-
 		content, err := client.GenerateContent(context.Background(), "Hi, I am a prompt")
+
+		assert.NotNil(t, client)
 		assert.Error(t, err)
 		assert.Empty(t, content)
-
 		mockDriver.AssertExpectations(t)
 	})
 }
