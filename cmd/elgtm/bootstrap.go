@@ -19,18 +19,19 @@ func Initialize(ctx context.Context, cfg *config.Config) (*reviewer.Engine, erro
 	var err error
 
 	// Initialize SCM
-	var scmClient scm.SCMClient
-
+	var scmDriver scm.Driver
 	switch cfg.SCM.Platform {
 	case config.PlatformGitHub:
-		scmClient, err = scm.NewGitHubClient(&httpClient, cfg.SCM)
+		scmDriver, err = scm.NewGitHubDriver(&httpClient, cfg.SCM)
 	default:
-		return nil, fmt.Errorf("unsupported platform: %s", cfg.SCM.Platform)
+		return nil, fmt.Errorf("unsupported SCM platform: %s", cfg.SCM.Platform)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize SCM client: %w", err)
+		return nil, fmt.Errorf("failed to initialize SCM driver: %w", err)
 	}
+
+	scmClient := scm.NewClient(scmDriver, cfg.SCM)
 
 	// Initialize LLM Driver
 	var llmDriver llm.Driver

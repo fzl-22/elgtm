@@ -10,38 +10,38 @@ import (
 	"github.com/google/go-github/v82/github"
 )
 
-type GitHubClient struct {
+type GitHubDriver struct {
 	client     *github.Client
 	httpClient *http.Client
 	cfg        config.SCM
 }
 
-func NewGitHubClient(httpClient *http.Client, cfg config.SCM) (SCMClient, error) {
+func NewGitHubDriver(httpClient *http.Client, cfg config.SCM) (*GitHubDriver, error) {
 	if cfg.Token == "" {
 		return nil, fmt.Errorf("github token is missing")
 	}
 
-	return &GitHubClient{
+	return &GitHubDriver{
 		client:     github.NewClient(httpClient).WithAuthToken(cfg.Token),
 		httpClient: httpClient,
 		cfg:        cfg,
 	}, nil
 }
 
-func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, number int) (*PullRequest, error) {
-	pr, _, err := c.client.PullRequests.Get(ctx, owner, repo, number)
+func (c *GitHubDriver) GetPullRequest(ctx context.Context, req GetPRRequest) (*GetPRResponse, error) {
+	pr, _, err := c.client.PullRequests.Get(ctx, req.Owner, req.Repo, req.Number)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get pull request #%d: %w", number, err)
+		return nil, fmt.Errorf("failed to get pull request #%d: %w", req.Number, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", *pr.DiffURL, nil)
+	httpReq, err := http.NewRequestWithContext(ctx, "GET", *pr.DiffURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("token %s", c.cfg.Token))
+	httpReq.Header.Set("Authorization", fmt.Sprintf("token %s", c.cfg.Token))
 
-	res, err := c.httpClient.Do(req)
+	res, err := c.httpClient.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get diff: %w", err)
 	}
@@ -63,7 +63,7 @@ func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, n
 		diffBytes = append(diffBytes, []byte(truncationMessage)...)
 	}
 
-	return &PullRequest{
+	parsedPR := &PullRequest{
 		ID:        pr.GetID(),
 		Number:    pr.GetNumber(),
 		Title:     pr.GetTitle(),
@@ -75,14 +75,18 @@ func (c *GitHubClient) GetPullRequest(ctx context.Context, owner, repo string, n
 		RawDiff:   string(diffBytes),
 		CreatedAt: pr.GetCreatedAt().Time,
 		UpdatedAt: pr.GetUpdatedAt().Time,
+	}
+
+	return &GetPRResponse{
+		PR: parsedPR,
 	}, nil
 }
 
-func (c *GitHubClient) PostIssueComment(ctx context.Context, owner, repo string, number int, comment *IssueComment) error {
+func (c *GitHubDriver) PostIssueComment(ctx context.Context, req PostIssueCommentRequest) error {
 	issueComment := github.IssueComment{
-		Body: comment.Body,
+		Body: req.IssueComment.Body,
 	}
-	_, _, err := c.client.Issues.CreateComment(ctx, owner, repo, number, &issueComment)
+	_, _, err := c.client.Issues.CreateComment(ctx, req.Owner, req.Repo, req.Number, &issueComment)
 	if err != nil {
 		return fmt.Errorf("failed to post issue comment: %w", err)
 	}
