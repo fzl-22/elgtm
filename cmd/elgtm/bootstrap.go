@@ -22,7 +22,7 @@ func Initialize(ctx context.Context, cfg *config.Config) (*reviewer.Engine, erro
 	var scmDriver scm.Driver
 	switch cfg.SCM.Platform {
 	case config.PlatformGitHub:
-		scmDriver, err = scm.NewGitHubDriver(&httpClient, cfg.SCM)
+		scmDriver, err = scm.NewGitHubDriver(&httpClient, cfg.SCM.Token)
 	default:
 		return nil, fmt.Errorf("unsupported SCM platform: %s", cfg.SCM.Platform)
 	}

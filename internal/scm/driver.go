@@ -8,9 +8,11 @@ type Driver interface {
 }
 
 type GetPRRequest struct {
-	Owner  string
-	Repo   string
-	Number int
+	Owner       string
+	Repo        string
+	Number      int
+	Token       string
+	MaxDiffSize int64
 }
 
 type GetPRResponse struct {
@@ -22,4 +24,5 @@ type PostIssueCommentRequest struct {
 	Repo         string
 	Number       int
 	IssueComment *IssueComment
+	Token        string
 }

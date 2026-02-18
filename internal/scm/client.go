@@ -21,9 +21,11 @@ func NewClient(driver Driver, cfg config.SCM) Client {
 
 func (c *client) GetPullRequest(ctx context.Context, owner, repo string, number int) (*PullRequest, error) {
 	req := GetPRRequest{
-		Owner:  owner,
-		Repo:   repo,
-		Number: number,
+		Owner:       owner,
+		Repo:        repo,
+		Token:       c.cfg.Token,
+		Number:      number,
+		MaxDiffSize: c.cfg.MaxDiffSize,
 	}
 
 	resp, err := c.driver.GetPullRequest(ctx, req)
@@ -39,6 +41,7 @@ func (c *client) PostIssueComment(ctx context.Context, owner, repo string, numbe
 		Owner:        owner,
 		Repo:         repo,
 		Number:       number,
+		Token:        c.cfg.Token,
 		IssueComment: issueComment,
 	}
 

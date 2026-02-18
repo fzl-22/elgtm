@@ -6,25 +6,22 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/fzl-22/elgtm/internal/config"
 	"github.com/google/go-github/v82/github"
 )
 
 type GitHubDriver struct {
 	client     *github.Client
 	httpClient *http.Client
-	cfg        config.SCM
 }
 
-func NewGitHubDriver(httpClient *http.Client, cfg config.SCM) (*GitHubDriver, error) {
-	if cfg.Token == "" {
+func NewGitHubDriver(httpClient *http.Client, token string) (*GitHubDriver, error) {
+	if token == "" {
 		return nil, fmt.Errorf("github token is missing")
 	}
 
 	return &GitHubDriver{
-		client:     github.NewClient(httpClient).WithAuthToken(cfg.Token),
+		client:     github.NewClient(httpClient).WithAuthToken(token),
 		httpClient: httpClient,
-		cfg:        cfg,
 	}, nil
 }
 
@@ -39,7 +36,7 @@ func (c *GitHubDriver) GetPullRequest(ctx context.Context, req GetPRRequest) (*G
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	httpReq.Header.Set("Authorization", fmt.Sprintf("token %s", c.cfg.Token))
+	httpReq.Header.Set("Authorization", fmt.Sprintf("token %s", req.Token))
 
 	res, err := c.httpClient.Do(httpReq)
 	if err != nil {
@@ -51,14 +48,14 @@ func (c *GitHubDriver) GetPullRequest(ctx context.Context, req GetPRRequest) (*G
 		return nil, fmt.Errorf("failed to get diff with status: %d", res.StatusCode)
 	}
 
-	limitedReader := io.LimitReader(res.Body, c.cfg.MaxDiffSize)
+	limitedReader := io.LimitReader(res.Body, req.MaxDiffSize)
 
 	diffBytes, err := io.ReadAll(limitedReader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read diff: %w", err)
 	}
 
-	if int64(len(diffBytes)) == c.cfg.MaxDiffSize {
+	if int64(len(diffBytes)) == req.MaxDiffSize {
 		truncationMessage := "\n\n... [DIFF TRUNCATED DUE TO SIZE LIMIT] ..."
 		diffBytes = append(diffBytes, []byte(truncationMessage)...)
 	}
