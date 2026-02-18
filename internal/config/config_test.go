@@ -12,7 +12,7 @@ import (
 func TestNewConfig(t *testing.T) {
 	setEnv := func(t *testing.T, key, value string) {
 		t.Helper()
-		os.Setenv(key, value)
+		t.Setenv(key, value)
 	}
 
 	t.Run("Success_OverrideAllDefaults", func(t *testing.T) {
@@ -108,7 +108,7 @@ func TestNewConfig(t *testing.T) {
 func TestBindEnvs(t *testing.T) {
 	setEnv := func(t *testing.T, key, value string) {
 		t.Helper()
-		os.Setenv(key, value)
+		t.Setenv(key, value)
 	}
 
 	t.Run("Success_BindAllEnvs", func(t *testing.T) {
