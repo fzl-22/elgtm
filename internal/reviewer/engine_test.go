@@ -50,6 +50,8 @@ func TestNewEngine(t *testing.T) {
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
 
 		assert.NotNil(t, engine)
+		mockSCMClient.AssertExpectations(t)
+		mockLLMClient.AssertExpectations(t)
 	})
 }
 
@@ -96,11 +98,11 @@ func TestRun(t *testing.T) {
 		})).Return(nil)
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err := engine.Run(context.Background())
-		assert.NoError(t, err)
 
+		assert.NotNil(t, engine)
+		assert.NoError(t, err)
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
@@ -117,12 +119,12 @@ func TestRun(t *testing.T) {
 		mockLLMClient := new(MockLLMClient)
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err := engine.Run(context.Background())
+
+		assert.NotNil(t, engine)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "prompt resolution failed")
-
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
@@ -146,12 +148,12 @@ func TestRun(t *testing.T) {
 		mockLLMClient := new(MockLLMClient)
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err = engine.Run(context.Background())
+
+		assert.NotNil(t, engine)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to load prompt file")
-
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
@@ -180,12 +182,12 @@ func TestRun(t *testing.T) {
 			Return(nil, fmt.Errorf("failed to get pull request"))
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err := engine.Run(context.Background())
+
+		assert.NotNil(t, engine)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to get pull request")
-
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
@@ -216,12 +218,12 @@ func TestRun(t *testing.T) {
 			}, nil)
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err := engine.Run(context.Background())
+
+		assert.NotNil(t, engine)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "prompt generation failed")
-
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
@@ -255,12 +257,12 @@ func TestRun(t *testing.T) {
 			Return("", fmt.Errorf("failed to generate content"))
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err := engine.Run(context.Background())
+
+		assert.NotNil(t, engine)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to generate review")
-
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
@@ -297,12 +299,12 @@ func TestRun(t *testing.T) {
 			Return(fmt.Errorf("failed to post issue comment"))
 
 		engine := reviewer.NewEngine(cfg, mockSCMClient, mockLLMClient)
-		assert.NotNil(t, engine)
 
 		err := engine.Run(context.Background())
+
+		assert.NotNil(t, engine)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to post issue comment")
-
 		mockSCMClient.AssertExpectations(t)
 		mockLLMClient.AssertExpectations(t)
 	})
