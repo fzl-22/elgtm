@@ -31,7 +31,7 @@ func getGitHubTestConfig(t *testing.T) (token, owner, repo string, prNumber int)
 }
 
 func TestNewGitHubDriver(t *testing.T) {
-	httpClient := &http.Client{Timeout: 5 & time.Second}
+	httpClient := &http.Client{Timeout: 5 * time.Second}
 
 	t.Run("Success_InitDriver", func(t *testing.T) {
 		token := "fake-github-token"
