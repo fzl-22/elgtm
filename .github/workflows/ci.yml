@@ -69,6 +69,16 @@ jobs:
           TOTAL=$(go tool cover -func=coverage.out | grep "total:" | awk '{print $3}')
           echo "**$TOTAL**" >> $GITHUB_STEP_SUMMARY
 
+      - name: Generate HTML Coverage Report
+        run: go tool cover -html=coverage.out -o coverage.html
+
+      - name: Upload Coverage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.html
+          retention-days: 7
+
   verify-docker:
     name: Verify Docker Build
     runs-on: ubuntu-latest
