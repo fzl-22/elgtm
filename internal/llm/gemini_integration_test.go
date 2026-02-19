@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewGeminiDriver(t *testing.T) {
+func TestGeminiDriver_NewGeminiDriver(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Success_InitDriver", func(t *testing.T) {
@@ -32,7 +32,7 @@ func TestNewGeminiDriver(t *testing.T) {
 	})
 }
 
-func TestGenerate(t *testing.T) {
+func TestGeminiDriver_Generate(t *testing.T) {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		t.Skip("Skipping integration test: GEMINI_API_KEY not set")

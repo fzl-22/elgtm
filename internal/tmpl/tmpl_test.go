@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerate(t *testing.T) {
+func TestTmpl_Generate(t *testing.T) {
 	t.Run("Success_ValidTemplate", func(t *testing.T) {
 		data := struct{ Name string }{Name: "ELGTM"}
 		content := "Hello {{.Name}}!"

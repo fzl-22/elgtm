@@ -28,7 +28,7 @@ func (m *MockDriver) PostIssueComment(ctx context.Context, req scm.PostIssueComm
 	return args.Error(0)
 }
 
-func TestNewClient(t *testing.T) {
+func TestClient_NewClient(t *testing.T) {
 	t.Run("Success_InitClient", func(t *testing.T) {
 		mockDriver := new(MockDriver)
 
@@ -40,7 +40,7 @@ func TestNewClient(t *testing.T) {
 	})
 }
 
-func TestGetPullRequest(t *testing.T) {
+func TestClient_GetPullRequest(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Success_SuccessGetPullRequest", func(t *testing.T) {
@@ -97,7 +97,7 @@ func TestGetPullRequest(t *testing.T) {
 	})
 }
 
-func TestPostIssueComment(t *testing.T) {
+func TestClient_PostIssueComment(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Success_SuccessPostIssueComment", func(t *testing.T) {

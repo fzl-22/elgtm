@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewConfig(t *testing.T) {
+func TestConfig_NewConfig(t *testing.T) {
 	setEnv := func(t *testing.T, key, value string) {
 		t.Helper()
 		t.Setenv(key, value)
@@ -105,7 +105,7 @@ func TestNewConfig(t *testing.T) {
 	})
 }
 
-func TestBindEnvs(t *testing.T) {
+func TestConfig_BindEnvs(t *testing.T) {
 	setEnv := func(t *testing.T, key, value string) {
 		t.Helper()
 		t.Setenv(key, value)

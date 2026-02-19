@@ -24,7 +24,7 @@ func (m *MockDriver) Generate(ctx context.Context, req llm.GenerateRequest) (*ll
 	return args.Get(0).(*llm.GenerateResponse), args.Error(1)
 }
 
-func TestNewClient(t *testing.T) {
+func TestClient_NewClient(t *testing.T) {
 	t.Run("Success_InitClient", func(t *testing.T) {
 		cfg := config.Config{}
 
@@ -36,7 +36,7 @@ func TestNewClient(t *testing.T) {
 	})
 }
 
-func TestGenerateContent(t *testing.T) {
+func TestClient_GenerateContent(t *testing.T) {
 	t.Run("Success_SuccessGenerate", func(t *testing.T) {
 		cfg := config.Config{}
 

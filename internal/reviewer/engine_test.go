@@ -40,7 +40,7 @@ func (m *MockLLMClient) GenerateContent(ctx context.Context, prompt string) (str
 	return args.String(0), args.Error(1)
 }
 
-func TestNewEngine(t *testing.T) {
+func TestEngine_NewEngine(t *testing.T) {
 	t.Run("Success_InitEngine", func(t *testing.T) {
 		cfg := config.Config{}
 
@@ -55,7 +55,7 @@ func TestNewEngine(t *testing.T) {
 	})
 }
 
-func TestRun(t *testing.T) {
+func TestEngine_Run(t *testing.T) {
 	createFile := func(t *testing.T, path string, content []byte) {
 		t.Helper()
 		err := os.WriteFile(path, content, 0644)
@@ -310,7 +310,7 @@ func TestRun(t *testing.T) {
 	})
 }
 
-func TestResolvePromptPath(t *testing.T) {
+func TestEngine_ResolvePromptPath(t *testing.T) {
 	createFile := func(t *testing.T, dir, name string) {
 		t.Helper()
 		path := filepath.Join(dir, name)

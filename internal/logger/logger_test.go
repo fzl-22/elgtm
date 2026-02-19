@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetup(t *testing.T) {
+func TestLogger_Setup(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
