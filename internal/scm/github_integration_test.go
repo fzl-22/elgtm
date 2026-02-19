@@ -3,6 +3,7 @@
 package scm_test
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strconv"
@@ -49,6 +50,29 @@ func TestNewGitHubDriver(t *testing.T) {
 }
 
 func TestGitHubDriver_Integration(t *testing.T) {
-	token, owner, repo, prNumber := getGitHubTestConfig(t)
-	t.Logf("Got config: %s %s %s %d", token, owner, repo, prNumber)
+	token, owner, repo, _ := getGitHubTestConfig(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	httpClient := &http.Client{Timeout: 5 * time.Second}
+
+	t.Run("Failure_GetPullRequest_NotFound", func(t *testing.T) {
+		driver, err := scm.NewGitHubDriver(httpClient, token)
+		require.NoError(t, err)
+
+		req := scm.GetPRRequest{
+			Owner:       owner,
+			Repo:        repo,
+			Number:      99999999,
+			Token:       token,
+			MaxDiffSize: 1024,
+		}
+
+		res, err := driver.GetPullRequest(ctx, req)
+
+		assert.Error(t, err)
+		assert.Nil(t, res)
+		assert.Contains(t, err.Error(), "failed to get pull request")
+	})
 }
