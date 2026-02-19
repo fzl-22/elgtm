@@ -50,12 +50,39 @@ func TestNewGitHubDriver(t *testing.T) {
 }
 
 func TestGitHubDriver_Integration(t *testing.T) {
-	token, owner, repo, _ := getGitHubTestConfig(t)
+	token, owner, repo, prNumber := getGitHubTestConfig(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	httpClient := &http.Client{Timeout: 5 * time.Second}
+
+	t.Run("Success_GetPullRequest", func(t *testing.T) {
+		driver, err := scm.NewGitHubDriver(httpClient, token)
+		require.NoError(t, err)
+
+		req := scm.GetPRRequest{
+			Owner:       owner,
+			Repo:        repo,
+			Number:      prNumber,
+			Token:       token,
+			MaxDiffSize: 1024 * 1024,
+		}
+
+		res, err := driver.GetPullRequest(ctx, req)
+
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.NotNil(t, res.PR)
+
+		assert.NotZero(t, res.PR.ID)
+		assert.Equal(t, prNumber, res.PR.Number)
+		assert.NotEmpty(t, res.PR.Title)
+		assert.NotEmpty(t, res.PR.Author)
+		assert.NotEmpty(t, res.PR.URL)
+		assert.NotEmpty(t, res.PR.DiffURL)
+		assert.NotEmpty(t, res.PR.RawDiff)
+	})
 
 	t.Run("Failure_GetPullRequest_NotFound", func(t *testing.T) {
 		driver, err := scm.NewGitHubDriver(httpClient, token)
