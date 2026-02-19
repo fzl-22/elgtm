@@ -38,9 +38,17 @@ runs:
   steps:
     - name: Run ELGTM Container
       shell: bash
-      env:
-        DOCKER_IMAGE: docker.io/amfaisal/elgtm:latest
       run: |
+        REF="${{ github.action_ref }}"
+
+        if [[ -z "$REF" || "$REF" == "master" ]]; then
+          TAG="latest"
+        else
+          TAG="$REF"
+        fi
+
+        DOCKER_IMAGE="docker.io/amfaisal/elgtm:$TAG"
+        
         echo "Starting ELGTM Review using $DOCKER_IMAGE..."
         
         docker run --rm \
