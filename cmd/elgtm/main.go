@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/fzl-22/elgtm/internal/bootstrap"
 	"github.com/fzl-22/elgtm/internal/config"
 	"github.com/fzl-22/elgtm/internal/logger"
 )
@@ -35,7 +36,7 @@ func main() {
 		"system_timeout", timeoutDuration.String(),
 	)
 
-	engine, err := Initialize(ctx, cfg)
+	engine, err := bootstrap.Initialize(ctx, cfg)
 	if err != nil {
 		slog.Error("Initialization failed", "error", err)
 		os.Exit(1)
