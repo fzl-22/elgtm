@@ -25,12 +25,12 @@ jobs:
           cache: true
 
       - name: Run Tests (Unit + Integration)
-        if: github.actor == 'fzl-22'
+        if: github.actor == github.repository_owner
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TEST_OWNER: ${{ github.repository_owner }}
-          GITHUB_TEST_REPO: ${{ github.event.repository }}
+          GITHUB_TEST_REPO: ${{ github.event.repository.name }}
           GITHUB_TEST_PR: 3
         run: go test -v -tags=integration -coverprofile=coverage.out ./...
 
