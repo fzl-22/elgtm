@@ -26,9 +26,13 @@ jobs:
 
       - name: Run Tests (Unit + Integration)
         if: github.actor == 'fzl-22'
-        run: go test -v -tags=integration -coverprofile=coverage.out ./...
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TEST_OWNER: ${{ github.repository_owner }}
+          GITHUB_TEST_REPO: ${{ github.event.repository }}
+          GITHUB_TEST_PR: 3
+        run: go test -v -tags=integration -coverprofile=coverage.out ./...
 
       - name: Run Tests (Unit Only)
         if: github.actor != 'fzl-22'
