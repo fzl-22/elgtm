@@ -28,14 +28,10 @@ jobs:
         if: github.actor == github.repository_owner
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_TEST_OWNER: ${{ github.repository_owner }}
-          GITHUB_TEST_REPO: ${{ github.event.repository.name }}
-          GITHUB_TEST_PR: 3
         run: go test -v -tags=integration -coverprofile=coverage.out ./...
 
       - name: Run Tests (Unit Only)
-        if: github.actor != 'fzl-22'
+        if: github.actor != github.repository_owner
         run: go test -v -coverprofile=coverage.out ./...
 
       - name: Generate Job Summary
@@ -97,3 +93,5 @@ jobs:
           push: false
           target: final
           tags: verify-build:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
