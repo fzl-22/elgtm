@@ -14,10 +14,14 @@ import (
 )
 
 func main() {
+	os.Exit(run())
+}
+
+func run() int {
 	cfg, err := config.NewConfig()
 	if err != nil {
 		slog.Error("Config load failed", "error", err)
-		os.Exit(1)
+		return 1
 	}
 
 	logger.Setup(cfg.System.LogLevel)
@@ -39,13 +43,14 @@ func main() {
 	engine, err := bootstrap.Initialize(ctx, cfg)
 	if err != nil {
 		slog.Error("Initialization failed", "error", err)
-		os.Exit(1)
+		return 1
 	}
 
 	if err := engine.Run(ctx); err != nil {
 		slog.Error("Review failed", "error", err)
-		os.Exit(1)
+		return 1
 	}
 
 	slog.Info("Review completed successfully")
+	return 0
 }
