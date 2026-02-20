@@ -32,7 +32,6 @@ func TestConfig_NewConfig(t *testing.T) {
 		setEnv(t, "SCM_MAX_DIFF_SIZE", "500000")         // Default: 2097152
 		setEnv(t, "REVIEW_PROMPT_TYPE", "security")      // Default: general
 		setEnv(t, "REVIEW_PROMPT_DIR", "custom_prompts") // Default: .reviewer
-		setEnv(t, "REVIEW_LANGUAGE", "id")               // Default: en
 		setEnv(t, "SYSTEM_LOG_LEVEL", "debug")           // Default: info
 		setEnv(t, "SYSTEM_TIMEOUT", "60")                // Default: 30
 
@@ -52,7 +51,6 @@ func TestConfig_NewConfig(t *testing.T) {
 		assert.Equal(t, int64(500000), cfg.SCM.MaxDiffSize)
 		assert.Equal(t, "security", cfg.Review.PromptType)
 		assert.Equal(t, "custom_prompts", cfg.Review.PromptDir)
-		assert.Equal(t, "id", cfg.Review.Language)
 		assert.Equal(t, "debug", cfg.System.LogLevel)
 		assert.Equal(t, 60, cfg.System.Timeout)
 	})
@@ -86,7 +84,6 @@ func TestConfig_NewConfig(t *testing.T) {
 		assert.Equal(t, int64(2097152), cfg.SCM.MaxDiffSize)
 		assert.Equal(t, "general", cfg.Review.PromptType)
 		assert.Equal(t, ".reviewer", cfg.Review.PromptDir)
-		assert.Equal(t, "en", cfg.Review.Language)
 		assert.Equal(t, "info", cfg.System.LogLevel)
 		assert.Equal(t, 300, cfg.System.Timeout)
 	})

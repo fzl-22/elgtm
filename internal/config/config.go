@@ -46,7 +46,6 @@ type LLM struct {
 type Review struct {
 	PromptType string `mapstructure:"prompt_type"`
 	PromptDir  string `mapstructure:"prompt_dir"`
-	Language   string `mapstructure:"language"`
 }
 
 type System struct {
@@ -67,7 +66,6 @@ func NewConfig() (*Config, error) {
 
 	v.SetDefault("review.prompt_type", "general")
 	v.SetDefault("review.prompt_dir", ".reviewer")
-	v.SetDefault("review.language", "en")
 
 	v.SetDefault("system.log_level", "info")
 	v.SetDefault("system.timeout", 300)
