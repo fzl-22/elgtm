@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -34,44 +36,17 @@ jobs:
         if: github.actor != github.repository_owner
         run: go test -v -coverprofile=coverage.out ./...
 
-      - name: Generate Job Summary
-        run: |
-          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ github.actor }}" == "fzl-22" ]; then
-            echo "> **Mode:** Full Suite (Unit + Integration)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "> **Mode:** Unit Tests Only" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "| File | Line | Function | Coverage |" >> $GITHUB_STEP_SUMMARY
-          echo "| :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
-
-          go tool cover -func=coverage.out | \
-          grep -v "total:" | \
-          sed 's|github.com/fzl-22/elgtm/||g' | \
-          awk '{ 
-            split($1, a, ":"); 
-            print "| " a[1] " | " a[2] " | " $2 " | " $3 " |" 
-          }' >> $GITHUB_STEP_SUMMARY
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          echo "### Total Coverage" >> $GITHUB_STEP_SUMMARY
-          TOTAL=$(go tool cover -func=coverage.out | grep "total:" | awk '{print $3}')
-          echo "**$TOTAL**" >> $GITHUB_STEP_SUMMARY
-
-      - name: Generate HTML Coverage Report
-        run: go tool cover -html=coverage.out -o coverage.html
+      - name: Generate Coverage Summary
+        id: coverage
+        uses: gwatts/go-coverage-action@v2
+        with:
+          coverage-threshold: 95
 
       - name: Upload Coverage Artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: coverage-report
+          name: ${{ steps.coverage.outputs.report-pathname }}
           path: coverage.html
           retention-days: 7
 
