@@ -17,7 +17,10 @@ type Config struct {
 
 type SCMPlatform string
 
-const PlatformGitHub SCMPlatform = "github"
+const (
+	PlatformGitHub SCMPlatform = "github"
+	PlatformGitLab SCMPlatform = "gitlab"
+)
 
 type SCM struct {
 	Platform    SCMPlatform `mapstructure:"platform"`
