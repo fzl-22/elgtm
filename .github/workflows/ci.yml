@@ -39,9 +39,12 @@ jobs:
       #   if: github.actor != github.repository_owner
       #   run: go test -v -coverprofile=coverage.out ./...
 
-      - name: Generate Coverage Summary
+      - name: Run Tests & Generate Coverage
         id: coverage
         uses: gwatts/go-coverage-action@v2
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOFLAGS: ${{ github.actor == github.repository_owner && '-tags=integration' || '' }}
         with:
           coverage-threshold: 95
 
