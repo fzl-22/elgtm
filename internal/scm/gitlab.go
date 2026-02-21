@@ -71,9 +71,9 @@ func (d *GitLabDriver) GetPullRequest(ctx context.Context, req GetPRRequest) (*G
 
 func (d *GitLabDriver) PostIssueComment(ctx context.Context, req PostIssueCommentRequest) error {
 	projectPath := path.Join(req.Owner, req.Repo)
-	_, _, err := d.client.Notes.CreateIssueNote(projectPath, int64(req.Number), &gitlab.CreateIssueNoteOptions{
+	_, _, err := d.client.Notes.CreateMergeRequestNote(projectPath, int64(req.Number), &gitlab.CreateMergeRequestNoteOptions{
 		Body: req.IssueComment.Body,
-	})
+	}, gitlab.WithContext(ctx))
 	if err != nil {
 		return fmt.Errorf("failed to create issue note: %w", err)
 	}
